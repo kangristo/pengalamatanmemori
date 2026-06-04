@@ -1,0 +1,616 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  BookOpen, 
+  Cpu, 
+  Database, 
+  Play, 
+  CheckCircle2, 
+  HelpCircle, 
+  ArrowRight, 
+  ArrowLeft,
+  Info,
+  RefreshCw,
+  Save,
+  Download
+} from 'lucide-react';
+
+export default function App() {
+  const [currentScreen, setCurrentScreen] = useState('intro'); // intro, materi, simulasi, kuis, hasil
+  const [score, setScore] = useState(0);
+
+  // Navigasi antar layar
+  const navigateTo = (screen) => {
+    setCurrentScreen(screen);
+    window.scrollTo(0, 0);
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-800">
+      {/* Header */}
+      <header className="bg-indigo-600 text-white p-4 shadow-md sticky top-0 z-50">
+        <div className="max-w-4xl mx-auto flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <Database className="w-6 h-6 text-yellow-300" />
+            <h1 className="font-bold text-lg md:text-xl">MPI Informatika: Pengalamatan Memori</h1>
+          </div>
+          <div className="hidden md:flex gap-4 text-sm font-medium">
+            <span className="bg-indigo-500 px-3 py-1 rounded-full">Kelas VIII SMP/MTs</span>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content Area */}
+      <main className="max-w-4xl mx-auto p-4 md:p-6 mt-4">
+        {currentScreen === 'intro' && <ScreenIntro onNext={() => navigateTo('materi')} />}
+        {currentScreen === 'materi' && <ScreenMateri onNext={() => navigateTo('simulasi')} onPrev={() => navigateTo('intro')} />}
+        {currentScreen === 'simulasi' && <ScreenSimulasi onNext={() => navigateTo('kuis')} onPrev={() => navigateTo('materi')} />}
+        {currentScreen === 'kuis' && <ScreenKuis onFinish={(finalScore) => { setScore(finalScore); navigateTo('hasil'); }} onPrev={() => navigateTo('simulasi')} />}
+        {currentScreen === 'hasil' && <ScreenHasil score={score} onRetry={() => navigateTo('intro')} />}
+      </main>
+    </div>
+  );
+}
+
+/* ================= SCREEN 1: INTRO ================= */
+function ScreenIntro({ onNext }) {
+  return (
+    <div className="bg-white rounded-2xl shadow-lg p-8 text-center animate-fade-in">
+      <div className="flex justify-center mb-6">
+        <div className="bg-indigo-100 p-6 rounded-full">
+          <Database className="w-24 h-24 text-indigo-600 animate-bounce" />
+        </div>
+      </div>
+      <h2 className="text-3xl font-extrabold text-slate-800 mb-4">Pengalamatan Memori<br/>(Memory Addressing)</h2>
+      <p className="text-lg text-slate-600 mb-8 max-w-2xl mx-auto">
+        Selamat datang! Di media pembelajaran ini, kita akan belajar bagaimana komputer menyimpan dan menemukan data di dalam memorinya. 
+        Mari kita mulai petualangan mencari tahu rahasia di dalam otak komputer!
+      </p>
+      <button 
+        onClick={onNext}
+        className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-full shadow-lg shadow-indigo-200 transform transition hover:scale-105 flex items-center gap-2 mx-auto"
+      >
+        <Play className="w-5 h-5 fill-current" />
+        Mulai Belajar
+      </button>
+    </div>
+  );
+}
+
+/* ================= SCREEN 2: MATERI ================= */
+function ScreenMateri({ onNext, onPrev }) {
+  return (
+    <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 animate-fade-in">
+      <div className="flex items-center gap-3 mb-6 border-b pb-4">
+        <BookOpen className="w-8 h-8 text-indigo-600" />
+        <h2 className="text-2xl font-bold text-slate-800">Konsep Dasar Memori</h2>
+      </div>
+
+      <div className="space-y-6">
+        <div className="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-lg">
+          <p className="text-lg text-slate-700">
+            <strong>Analogi Loker Sekolah:</strong> Bayangkan memori komputer (RAM) itu seperti deretan loker di sekolahmu.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div>
+            <ul className="space-y-4">
+              <li className="flex gap-3">
+                <div className="bg-blue-100 p-2 rounded-lg h-fit text-blue-600">
+                  <span className="font-bold">1</span>
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg">Alamat Memori (Address)</h3>
+                  <p className="text-slate-600">Sama seperti <strong>nomor loker</strong>. Setiap loker memiliki nomor unik agar kamu tidak salah memasukkan atau mengambil barang. Di komputer, alamat ini biasanya berupa deretan angka (seperti 001, 002, dst).</p>
+                </div>
+              </li>
+              <li className="flex gap-3">
+                <div className="bg-green-100 p-2 rounded-lg h-fit text-green-600">
+                  <span className="font-bold">2</span>
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg">Data Memori (Value/Isi)</h3>
+                  <p className="text-slate-600">Sama seperti <strong>barang di dalam loker</strong> (buku, tas, sepatu). Komputer menyimpan data berupa angka atau kode di dalam alamat memori tersebut.</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div className="bg-slate-100 p-6 rounded-xl flex justify-center items-center flex-col gap-4 border-2 border-slate-200">
+            <h4 className="font-bold text-slate-600 mb-2">Ilustrasi Loker Memori</h4>
+            <div className="flex gap-2">
+              {[
+                { no: '00', isi: 'Apel' },
+                { no: '01', isi: 'Buku' },
+                { no: '02', isi: 'Kosong' }
+              ].map((loker, idx) => (
+                <div key={idx} className="bg-white border-2 border-indigo-200 rounded-lg w-24 overflow-hidden shadow-sm">
+                  <div className="bg-indigo-100 text-center py-1 border-b-2 border-indigo-200 font-mono text-sm font-bold text-indigo-800">
+                    Alamat {loker.no}
+                  </div>
+                  <div className="p-3 text-center h-16 flex items-center justify-center font-medium text-slate-700">
+                    {loker.isi}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p className="text-sm text-slate-500 italic text-center mt-2">
+              Prosesor (CPU) menggunakan 'Alamat' untuk mencari 'Isi'.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex justify-between mt-8 pt-6 border-t">
+        <button onClick={onPrev} className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-indigo-600 font-medium transition">
+          <ArrowLeft className="w-5 h-5" /> Kembali
+        </button>
+        <button onClick={onNext} className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-medium shadow-md transition">
+          Lanjut ke Simulasi <ArrowRight className="w-5 h-5" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ================= SCREEN 3: SIMULASI ================= */
+function ScreenSimulasi({ onNext, onPrev }) {
+  // Initial RAM state (8 slots)
+  const initialRam = Array.from({ length: 8 }).map((_, i) => ({
+    address: `0${i}`,
+    data: Math.floor(Math.random() * 100).toString().padStart(2, '0') // Random 2 digit data
+  }));
+
+  const [ram, setRam] = useState(initialRam);
+  const [addressInput, setAddressInput] = useState('00');
+  const [dataInput, setDataInput] = useState('');
+  const [cpuDisplay, setCpuDisplay] = useState('--');
+  
+  // Animation states
+  const [activeAddress, setActiveAddress] = useState(null);
+  const [activityLog, setActivityLog] = useState([{ time: new Date(), msg: 'Sistem menyala. Menunggu perintah CPU.' }]);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [actionType, setActionType] = useState(null); // 'read' or 'write'
+
+  const addLog = (msg) => {
+    setActivityLog(prev => [{ time: new Date(), msg }, ...prev].slice(0, 5));
+  };
+
+  const handleRead = () => {
+    if (isProcessing) return;
+    
+    // Validate
+    const slot = ram.find(r => r.address === addressInput);
+    if (!slot) {
+      addLog(`❌ Error: Alamat ${addressInput} tidak ditemukan!`);
+      return;
+    }
+
+    setIsProcessing(true);
+    setActionType('read');
+    setActiveAddress(addressInput);
+    setCpuDisplay('Mencari...');
+    addLog(`CPU meminta BACA data pada alamat ${addressInput}...`);
+
+    // Simulate delay
+    setTimeout(() => {
+      setCpuDisplay(slot.data);
+      addLog(`✅ Berhasil BACA: Ditemukan data "${slot.data}" di alamat ${addressInput}.`);
+      setIsProcessing(false);
+      setTimeout(() => setActiveAddress(null), 1000);
+    }, 1500);
+  };
+
+  const handleWrite = () => {
+    if (isProcessing) return;
+    
+    if (!dataInput) {
+      addLog(`❌ Error: Data tidak boleh kosong untuk perintah TULIS!`);
+      return;
+    }
+
+    const slotIndex = ram.findIndex(r => r.address === addressInput);
+    if (slotIndex === -1) {
+      addLog(`❌ Error: Alamat ${addressInput} tidak ditemukan!`);
+      return;
+    }
+
+    setIsProcessing(true);
+    setActionType('write');
+    setActiveAddress(addressInput);
+    addLog(`CPU mengirim perintah TULIS data "${dataInput}" ke alamat ${addressInput}...`);
+
+    // Simulate delay
+    setTimeout(() => {
+      const newRam = [...ram];
+      newRam[slotIndex].data = dataInput;
+      setRam(newRam);
+      setCpuDisplay(dataInput);
+      setDataInput('');
+      addLog(`✅ Berhasil TULIS: Data "${dataInput}" tersimpan di alamat ${addressInput}.`);
+      setIsProcessing(false);
+      setTimeout(() => setActiveAddress(null), 1000);
+    }, 1500);
+  };
+
+  const resetSimulation = () => {
+    setRam(initialRam);
+    setAddressInput('00');
+    setDataInput('');
+    setCpuDisplay('--');
+    setActiveAddress(null);
+    setActivityLog([{ time: new Date(), msg: 'Sistem di-reset.' }]);
+  };
+
+  return (
+    <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 animate-fade-in">
+      <div className="flex items-center gap-3 mb-4">
+        <Cpu className="w-8 h-8 text-indigo-600" />
+        <h2 className="text-2xl font-bold text-slate-800">Simulasi Interaktif</h2>
+      </div>
+      <p className="text-slate-600 mb-6">
+        Ayo praktikkan! Kamu adalah CPU. Masukkan <strong>Alamat</strong> dan pilih apakah ingin <strong>MEMBACA (Read)</strong> isi dari memori tersebut, atau <strong>MENULIS (Write/Simpan)</strong> data baru ke dalamnya.
+      </p>
+
+      {/* Main Simulation Area */}
+      <div className="flex flex-col lg:flex-row gap-6 bg-slate-50 p-4 rounded-xl border border-slate-200">
+        
+        {/* CPU Panel */}
+        <div className="flex-1 bg-white p-5 rounded-lg border-2 border-slate-300 shadow-sm relative">
+          <div className="absolute -top-3 left-4 bg-white px-2 font-bold text-slate-500 text-sm flex items-center gap-1">
+            <Cpu className="w-4 h-4"/> PROSESOR (CPU)
+          </div>
+          
+          <div className="space-y-4 mt-2">
+            {/* Display screen on CPU */}
+            <div className="bg-slate-800 text-green-400 p-4 rounded-md font-mono text-center h-24 flex flex-col justify-center relative overflow-hidden">
+              <span className="text-xs text-slate-400 absolute top-2 left-2">Data Register:</span>
+              <span className={`text-3xl ${isProcessing && actionType === 'read' ? 'animate-pulse' : ''}`}>
+                {cpuDisplay}
+              </span>
+            </div>
+
+            {/* Controls */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-500 mb-1">Target Alamat (00-07)</label>
+                <select 
+                  className="w-full border-2 border-slate-300 rounded p-2 focus:border-indigo-500 focus:outline-none"
+                  value={addressInput}
+                  onChange={(e) => setAddressInput(e.target.value)}
+                  disabled={isProcessing}
+                >
+                  {ram.map(r => <option key={r.address} value={r.address}>{r.address}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-500 mb-1">Data Input (Ketik Max 3 Karakter)</label>
+                <input 
+                  type="text" 
+                  maxLength="3"
+                  className="w-full border-2 border-slate-300 rounded p-2 focus:border-indigo-500 focus:outline-none"
+                  placeholder="Misal: 99"
+                  value={dataInput}
+                  onChange={(e) => setDataInput(e.target.value)}
+                  disabled={isProcessing}
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-2 pt-2">
+              <button 
+                onClick={handleRead}
+                disabled={isProcessing}
+                className="flex-1 bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 text-white py-2 rounded font-bold flex justify-center items-center gap-2 transition"
+              >
+                <Download className="w-4 h-4" /> BACA (Read)
+              </button>
+              <button 
+                onClick={handleWrite}
+                disabled={isProcessing}
+                className="flex-1 bg-green-500 hover:bg-green-600 disabled:bg-green-300 text-white py-2 rounded font-bold flex justify-center items-center gap-2 transition"
+              >
+                <Save className="w-4 h-4" /> TULIS (Write)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Animation Arrow (Desktop only mostly) */}
+        <div className="hidden lg:flex flex-col justify-center items-center gap-2 w-16">
+          <div className={`transition-opacity duration-300 ${isProcessing && actionType === 'read' ? 'opacity-100 text-blue-500' : 'opacity-20 text-slate-300'}`}>
+            <ArrowLeft className="w-10 h-10 animate-bounce" />
+            <span className="text-xs font-bold block text-center mt-1">Data</span>
+          </div>
+          <div className={`transition-opacity duration-300 ${isProcessing && actionType === 'write' ? 'opacity-100 text-green-500' : 'opacity-20 text-slate-300'}`}>
+            <span className="text-xs font-bold block text-center mb-1">Tulis</span>
+            <ArrowRight className="w-10 h-10 animate-pulse" />
+          </div>
+        </div>
+
+        {/* RAM Panel */}
+        <div className="flex-1 bg-white p-5 rounded-lg border-2 border-slate-300 shadow-sm relative">
+           <div className="absolute -top-3 left-4 bg-white px-2 font-bold text-slate-500 text-sm flex items-center gap-1">
+            <MemoryStick className="w-4 h-4"/> MEMORI UTAMA (RAM)
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-2">
+            {ram.map((slot) => {
+              const isActive = activeAddress === slot.address;
+              return (
+                <div 
+                  key={slot.address} 
+                  className={`border-2 rounded-lg overflow-hidden transition-all duration-300
+                    ${isActive && actionType === 'read' ? 'border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.5)] transform scale-105' : ''}
+                    ${isActive && actionType === 'write' ? 'border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.5)] transform scale-105' : ''}
+                    ${!isActive ? 'border-slate-200' : ''}
+                  `}
+                >
+                  <div className={`text-center py-1 text-xs font-bold border-b 
+                    ${isActive && actionType === 'read' ? 'bg-blue-100 text-blue-800 border-blue-200' : ''}
+                    ${isActive && actionType === 'write' ? 'bg-green-100 text-green-800 border-green-200' : ''}
+                    ${!isActive ? 'bg-slate-100 text-slate-600 border-slate-200' : ''}
+                  `}>
+                    Alamat {slot.address}
+                  </div>
+                  <div className={`text-center py-3 font-mono font-bold text-lg
+                    ${isActive && actionType === 'write' ? 'animate-pulse text-green-600' : 'text-slate-800'}
+                  `}>
+                    {slot.data}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Activity Log */}
+      <div className="mt-6 bg-slate-900 text-green-400 p-4 rounded-lg font-mono text-sm h-32 overflow-hidden relative">
+         <div className="absolute top-2 right-2 flex gap-2">
+            <button onClick={resetSimulation} className="text-slate-400 hover:text-white" title="Reset Simulasi">
+               <RefreshCw className="w-4 h-4" />
+            </button>
+         </div>
+        <div className="font-bold text-slate-400 border-b border-slate-700 pb-1 mb-2 uppercase text-xs tracking-wider">Log Aktivitas Sistem</div>
+        <div className="space-y-1">
+          {activityLog.map((log, idx) => (
+            <div key={idx} className="opacity-90">
+              <span className="text-slate-500">[{log.time.toLocaleTimeString()}]</span> {log.msg}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex justify-between mt-8 pt-6 border-t">
+        <button onClick={onPrev} className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-indigo-600 font-medium transition">
+          <ArrowLeft className="w-5 h-5" /> Kembali
+        </button>
+        <button onClick={onNext} className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-medium shadow-md transition">
+          Mulai Kuis <CheckCircle2 className="w-5 h-5" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// Icon Helper untuk Simulasi RAM
+function MemoryStick(props) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M4 10h16v8H4z"/><path d="M8 10V8"/><path d="M12 10V8"/><path d="M16 10V8"/><path d="M4 14h16"/><path d="M8 14v4"/><path d="M12 14v4"/><path d="M16 14v4"/>
+    </svg>
+  );
+}
+
+/* ================= SCREEN 4: KUIS ================= */
+const QUESTIONS = [
+  {
+    question: "Berdasarkan analogi memori sebagai deretan loker, apa yang dimaksud dengan 'Alamat Memori'?",
+    options: [
+      "Barang yang disimpan di dalam loker",
+      "Kunci untuk membuka loker",
+      "Nomor unik pada pintu loker",
+      "Petugas yang menjaga loker"
+    ],
+    answer: 2
+  },
+  {
+    question: "Apa yang terjadi ketika CPU melakukan proses 'BACA' (Read) pada memori?",
+    options: [
+      "CPU menghapus data di memori",
+      "CPU mengirim data baru untuk disimpan di memori",
+      "CPU mengambil atau melihat data yang ada pada alamat memori tertentu",
+      "Memori mengubah alamatnya secara otomatis"
+    ],
+    answer: 2
+  },
+  {
+    question: "Jika kamu ingin menyimpan hasil perhitungan ke dalam RAM, perintah apa yang dilakukan oleh CPU?",
+    options: [
+      "TULIS (Write)",
+      "BACA (Read)",
+      "HAPUS (Delete)",
+      "RESET"
+    ],
+    answer: 0
+  },
+  {
+    question: "Mengapa setiap lokasi di dalam memori harus memiliki alamat yang unik (berbeda-beda)?",
+    options: [
+      "Agar memori terlihat penuh",
+      "Agar komputer bisa menemukan data yang tepat tanpa tertukar",
+      "Agar harga memori menjadi lebih mahal",
+      "Agar CPU tidak bisa membaca datanya"
+    ],
+    answer: 1
+  }
+];
+
+function ScreenKuis({ onFinish, onPrev }) {
+  const [currentQ, setCurrentQ] = useState(0);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [isAnswered, setIsAnswered] = useState(false);
+  const [score, setScore] = useState(0);
+
+  const handleAnswer = (index) => {
+    if (isAnswered) return;
+    setSelectedOption(index);
+    setIsAnswered(true);
+
+    if (index === QUESTIONS[currentQ].answer) {
+      setScore(prev => prev + 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentQ < QUESTIONS.length - 1) {
+      setCurrentQ(prev => prev + 1);
+      setSelectedOption(null);
+      setIsAnswered(false);
+    } else {
+      // Hitung nilai akhir (skala 100)
+      const finalScore = Math.round((score / QUESTIONS.length) * 100);
+      // Jika pertanyaan terakhir baru saja dijawab benar (state update pending)
+      const actualFinalScore = Math.round(((selectedOption === QUESTIONS[currentQ].answer ? score + 1 : score) / QUESTIONS.length) * 100);
+      onFinish(actualFinalScore);
+    }
+  };
+
+  const q = QUESTIONS[currentQ];
+
+  return (
+    <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 animate-fade-in max-w-3xl mx-auto">
+       <div className="flex items-center justify-between mb-6 border-b pb-4">
+        <div className="flex items-center gap-3">
+          <HelpCircle className="w-8 h-8 text-indigo-600" />
+          <h2 className="text-2xl font-bold text-slate-800">Kuis Evaluasi</h2>
+        </div>
+        <div className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full font-bold text-sm">
+          Soal {currentQ + 1} / {QUESTIONS.length}
+        </div>
+      </div>
+
+      <div className="mb-8">
+        <h3 className="text-xl font-medium text-slate-800 mb-6 leading-relaxed">
+          {q.question}
+        </h3>
+        <div className="space-y-3">
+          {q.options.map((opt, idx) => {
+            let btnClass = "w-full text-left p-4 rounded-xl border-2 transition-all duration-200 ";
+            
+            if (!isAnswered) {
+              btnClass += "border-slate-200 hover:border-indigo-400 hover:bg-indigo-50";
+            } else {
+              if (idx === q.answer) {
+                btnClass += "border-green-500 bg-green-50 text-green-800 font-medium"; // Correct answer
+              } else if (idx === selectedOption) {
+                btnClass += "border-red-500 bg-red-50 text-red-800"; // Wrong selected
+              } else {
+                btnClass += "border-slate-200 opacity-50"; // Others
+              }
+            }
+
+            return (
+              <button 
+                key={idx}
+                onClick={() => handleAnswer(idx)}
+                disabled={isAnswered}
+                className={btnClass}
+              >
+                <div className="flex items-center justify-between">
+                  <span>{opt}</span>
+                  {isAnswered && idx === q.answer && <CheckCircle2 className="text-green-500 w-5 h-5" />}
+                </div>
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
+      <div className="flex justify-between mt-8 pt-6 border-t">
+        <button 
+          onClick={onPrev} 
+          disabled={isAnswered && currentQ === QUESTIONS.length - 1} // Cegah mundur jika sudah jawab soal terakhir
+          className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-indigo-600 font-medium transition disabled:opacity-50"
+        >
+          <ArrowLeft className="w-5 h-5" /> Kembali ke Simulasi
+        </button>
+        
+        {isAnswered && (
+          <button onClick={handleNext} className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-medium shadow-md transition animate-bounce">
+            {currentQ < QUESTIONS.length - 1 ? 'Soal Berikutnya' : 'Lihat Hasil'} <ArrowRight className="w-5 h-5" />
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ================= SCREEN 5: HASIL ================= */
+function ScreenHasil({ score, onRetry }) {
+  let message = "";
+  let colorClass = "";
+
+  if (score === 100) {
+    message = "Luar Biasa! Kamu sangat memahami materi pengalamatan memori.";
+    colorClass = "text-green-600";
+  } else if (score >= 70) {
+    message = "Kerja Bagus! Kamu sudah memahami sebagian besar materi.";
+    colorClass = "text-blue-600";
+  } else {
+    message = "Jangan menyerah! Coba baca kembali materi dan lakukan simulasi.";
+    colorClass = "text-amber-500";
+  }
+
+  return (
+    <div className="bg-white rounded-2xl shadow-lg p-8 text-center animate-fade-in max-w-2xl mx-auto">
+      <h2 className="text-3xl font-bold text-slate-800 mb-2">Selesai!</h2>
+      <p className="text-slate-600 mb-8">Kamu telah menyelesaikan modul Pengalamatan Memori.</p>
+      
+      <div className="relative w-48 h-48 mx-auto mb-6 flex justify-center items-center">
+        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+          <path
+            className="text-slate-100"
+            strokeWidth="3"
+            stroke="currentColor"
+            fill="none"
+            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+          />
+          <path
+            className={colorClass}
+            strokeDasharray={`${score}, 100`}
+            strokeWidth="3"
+            strokeLinecap="round"
+            stroke="currentColor"
+            fill="none"
+            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+          />
+        </svg>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-4xl font-extrabold text-slate-800">
+          {score}
+        </div>
+      </div>
+
+      <h3 className={`text-xl font-bold mb-2 ${colorClass}`}>{message}</h3>
+      
+      <div className="bg-slate-50 border p-4 rounded-lg mt-6 mb-8 text-left">
+        <h4 className="font-bold text-slate-700 flex items-center gap-2 mb-2"><Info className="w-4 h-4"/> Rangkuman</h4>
+        <ul className="list-disc list-inside text-sm text-slate-600 space-y-1">
+          <li>Memori RAM menyimpan data di lokasi-lokasi tertentu.</li>
+          <li>Setiap lokasi memiliki <strong>Alamat (Address)</strong> yang unik.</li>
+          <li><strong>Data (Value)</strong> adalah informasi yang disimpan di dalam alamat tersebut.</li>
+          <li>CPU menggunakan alamat untuk mencari data (BACA) atau menyimpan data baru (TULIS).</li>
+        </ul>
+      </div>
+
+      <button 
+        onClick={onRetry}
+        className="bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105 flex items-center gap-2 mx-auto"
+      >
+        <RefreshCw className="w-5 h-5" />
+        Belajar Ulang
+      </button>
+    </div>
+  );
+}
